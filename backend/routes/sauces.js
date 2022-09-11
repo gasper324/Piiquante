@@ -14,6 +14,7 @@ router.post('/', auth, multer, saucesCtrl.createSauce);
 router.get('/', auth, multer, saucesCtrl.getAllSauces);
 router.get('/:id', auth, saucesCtrl.getOneSauce);
 router.put('/:id', auth, multer, saucesCtrl.modifySauce);
+router.delete('/:id', auth, multer, saucesCtrl.deleteSauce);
 
 //export router
 module.exports = router;
