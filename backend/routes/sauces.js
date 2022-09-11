@@ -10,8 +10,8 @@ const multer = require('../middleware/multer-config');
 const saucesCtrl = require('../controllers/sauces');
 
 //setup routes
-
-router.post('/', auth, multer, saucesCtrl.createSauce);
+router.post('/', auth, saucesCtrl.createSauce);
+router.get('/', auth, multer, saucesCtrl.getAllSauces);
 
 
 //export router
