@@ -61,3 +61,55 @@ exports.getOneSauce = (req, res, next) => {
         }
     );
 };
+
+exports.modifySauce = (req, res, next) => {
+    let sauce = new Sauce({_id: req.params._id});
+    if (req.file) {
+        const url = req.protocol + '://' + req.get('host');
+        req.body.sauce = JSON.parse(req.body.sauce);
+        sauce = {
+            _id: req.params.id,
+            userId: req.body.sauce.userId,
+            name: req.body.sauce.name,
+            manufacturer: req.body.sauce.manufacturer,
+            description: req.body.sauce.description,
+            mainPepper: req.body.sauce.mainPepper,
+            imageUrl: url + '/images/' + req.file.filename,
+            heat: req.body.sauce.heat,
+            likes: req.body.sauce.likes,
+            dislikes: req.body.sauce.dislikes,
+            usersLiked: req.body.sauce.usersLiked,
+            usersDisliked: req.body.sauce.usersDisliked
+        };
+        console.log(sauce);
+    } else {
+        sauce = {
+            _id: req.params.id,
+            userId: req.body.userId,
+            name: req.body.name,
+            manufacturer: req.body.manufacturer,
+            description: req.body.description,
+            mainPepper: req.body.mainPepper,
+            imageUrl: req.body.imageUrl,
+            heat: req.body.heat,
+            likes: req.body.likes,
+            dislikes: req.body.dislikes,
+            usersLiked: req.body.usersLiked,
+            usersDisliked: req.body.usersDisliked
+        };
+    };
+    console.log(sauce);
+    Sauce.updateOne({_id: req.params.id}, sauce).then(
+        () => {
+            res.status(201).json({
+                message: 'Sauce was successfully modified'
+            });
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                error: error
+            });
+        }
+    );
+};
