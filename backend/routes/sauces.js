@@ -4,15 +4,14 @@ const router = express.Router();
 
 //setup multer with token authorization
 const auth = require('../middleware/auth');
-const multer = require('../middleware/multer-config)');
+const multer = require('../middleware/multer-config');
 
 //require controller functions
-
-
+const saucesCtrl = require('../controllers/sauces');
 
 //setup routes
 
-router.post('/', auth, multer, /*insert function*/)
+router.post('/', auth, multer, saucesCtrl.createSauce);
 
 
 //export router
