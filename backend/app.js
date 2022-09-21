@@ -4,6 +4,11 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 
+const dotenv = require('dotenv');
+dotenv.config();
+const user = process.env.DB_USER;
+const password = process.env.DB_PASS;
+
 // prevent CORS from stopping access
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -14,7 +19,7 @@ app.use((req, res, next) => {
 
 //connect to MongoDb using Mongoose
 const mongoose = require('mongoose');
-mongoose.connect('mongodb+srv://cjgmoose:wCGJeylWnleBoDam@cluster0.b34g6jv.mongodb.net/?retryWrites=true&w=majority')
+mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.b34g6jv.mongodb.net/?retryWrites=true&w=majority`)
   .then(() => {
     console.log('Successfully connected to MongoDB Atlas!');
   })

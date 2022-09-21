@@ -77,10 +77,6 @@ exports.modifySauce = (req, res, next) => {
             mainPepper: req.body.sauce.mainPepper,
             imageUrl: url + '/images/' + req.file.filename,
             heat: req.body.sauce.heat,
-            likes: req.body.sauce.likes,
-            dislikes: req.body.sauce.dislikes,
-            usersLiked: req.body.sauce.usersLiked,
-            usersDisliked: req.body.sauce.usersDisliked
         };
         console.log(sauce);
     } else {
@@ -93,10 +89,6 @@ exports.modifySauce = (req, res, next) => {
             mainPepper: req.body.mainPepper,
             imageUrl: req.body.imageUrl,
             heat: req.body.heat,
-            likes: req.body.likes,
-            dislikes: req.body.dislikes,
-            usersLiked: req.body.usersLiked,
-            usersDisliked: req.body.usersDisliked
         };
     };
     Sauce.updateOne({_id: req.params.id}, sauce).then(
@@ -136,3 +128,46 @@ exports.deleteSauce = (req, res, next) => {
         }
     );
 };
+
+exports.updateLikeStatus = (req, res, next) => {
+    let sauce = Sauce.findOne({_id: req.params.id}).then(
+        (sauce) => {
+    console.log(sauce)
+    if (req.body.like === 1) {
+        sauce.usersLiked.push(req.body.userId)
+        };
+    if (req.body.like === -1) {
+        sauce.usersDisliked.push(req.body.userId)
+    };
+    if (req.body.like === 0) {
+        if (sauce.usersLiked.includes(req.body.userId)) {
+            sauce.usersLiked.splice(sauce.usersLiked.indexOf(req.body.userId))
+        } else {
+            sauce.usersDisliked.splice(sauce.usersDisliked.indexOf(req.body.userId))
+        };
+    };
+    sauce = {
+        _id: req.params.id,
+        likes: sauce.usersLiked.length,
+        dislikes: sauce.usersDisliked.length,
+        usersLiked: sauce.usersLiked,
+        usersDisliked: sauce.usersDisliked
+    };
+    console.log(sauce);
+
+    Sauce.updateOne({_id: req.params.id}, sauce).then(
+        () => {
+            res.status(201).json({
+                message: 'Sauce was successfully liked'
+            });
+        }
+    ).catch(
+            (error) => { 
+                res.status(400).json({
+                  error: error
+                });
+              }
+        );
+            }
+    )
+}
