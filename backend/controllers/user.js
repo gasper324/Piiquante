@@ -1,7 +1,9 @@
+//bcrypt for password hashing, jwt for token auth, and user model
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
+//signup funtion uses user model to create user, hashes user password, and saves to database
 exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10).then(
         (hash) => {
@@ -9,7 +11,6 @@ exports.signup = (req, res, next) => {
                 email: req.body.email,
                 password: hash
             });
-            console.log(user);
             user.save().then(
                 () => {
                     res.status(201).json({
@@ -27,6 +28,7 @@ exports.signup = (req, res, next) => {
     );
 };
 
+//login function checks for user info in database using bcrypt to compare hashed password and issues token if validated
 exports.login = (req, res, next) => {
     User.findOne({ email: req.body.email }).then(
         (user) => {

@@ -1,10 +1,11 @@
-const sauces = require('../models/sauces');
+//require sauce data model and file system for handling images
 const Sauce = require('../models/sauces');
 const fs = require('fs');
 
+//creates new sauce from model and user data, sets initial likes/dislikes to zero and usersLiked/usersDisliked to empty arrays
 exports.createSauce = (req, res, next) => {
     req.body.sauce = JSON.parse(req.body.sauce);
-    const url = req.protocol + '://' + req.get('host');  /* can we go though this line */
+    const url = req.protocol + '://' + req.get('host');
     const sauce = new Sauce({
       userId: req.body.sauce.userId,
       name: req.body.sauce.name,
@@ -33,6 +34,7 @@ exports.createSauce = (req, res, next) => {
       );
     };
 
+//retrieves all sauce data from MondoDB
 exports.getAllSauces = (req, res, next) => {
     Sauce.find().then(
             (sauces) => {
@@ -47,6 +49,7 @@ exports.getAllSauces = (req, res, next) => {
     )
 }
 
+//retrieves sauce data form MongoDB for the select sauce id
 exports.getOneSauce = (req, res, next) => {
     Sauce.findOne({
         _id: req.params.id
@@ -63,6 +66,7 @@ exports.getOneSauce = (req, res, next) => {
     );
 };
 
+//makes changes to the database entry for selected sauce id, checks if image change is required
 exports.modifySauce = (req, res, next) => {
     let sauce = new Sauce({_id: req.params._id});
     if (req.file) {
@@ -78,7 +82,6 @@ exports.modifySauce = (req, res, next) => {
             imageUrl: url + '/images/' + req.file.filename,
             heat: req.body.sauce.heat,
         };
-        console.log(sauce);
     } else {
         sauce = {
             _id: req.params.id,
@@ -91,6 +94,7 @@ exports.modifySauce = (req, res, next) => {
             heat: req.body.heat,
         };
     };
+    //updates sauce with selected id with newly created sauce object 
     Sauce.updateOne({_id: req.params.id}, sauce).then(
         () => {
             res.status(201).json({
@@ -106,6 +110,7 @@ exports.modifySauce = (req, res, next) => {
     );
 };
 
+//deletes sauce object from database for selected id; deletes corresponding image file
 exports.deleteSauce = (req, res, next) => {
     Sauce.findOne({_id: req.params.id}).then(
         (sauce) => {
@@ -129,16 +134,20 @@ exports.deleteSauce = (req, res, next) => {
     );
 };
 
+// updates likes, dislikes, usersLiked, and usersDisliked for selected sauce id
 exports.updateLikeStatus = (req, res, next) => {
+    // finds sauce of selected id
     let sauce = Sauce.findOne({_id: req.params.id}).then(
         (sauce) => {
-    console.log(sauce)
+    // if liked, adds userId to usersLiked array
     if (req.body.like === 1) {
         sauce.usersLiked.push(req.body.userId)
         };
+    // if disliked, adds userId to usersDisliked array
     if (req.body.like === -1) {
         sauce.usersDisliked.push(req.body.userId)
     };
+    // if unliked or unDisliked removes userId form corresponding array
     if (req.body.like === 0) {
         if (sauce.usersLiked.includes(req.body.userId)) {
             sauce.usersLiked.splice(sauce.usersLiked.indexOf(req.body.userId))
@@ -146,6 +155,7 @@ exports.updateLikeStatus = (req, res, next) => {
             sauce.usersDisliked.splice(sauce.usersDisliked.indexOf(req.body.userId))
         };
     };
+    // create new object data for sauce of selected id
     sauce = {
         _id: req.params.id,
         likes: sauce.usersLiked.length,
@@ -153,8 +163,7 @@ exports.updateLikeStatus = (req, res, next) => {
         usersLiked: sauce.usersLiked,
         usersDisliked: sauce.usersDisliked
     };
-    console.log(sauce);
-
+    // updates the database with the new data
     Sauce.updateOne({_id: req.params.id}, sauce).then(
         () => {
             res.status(201).json({

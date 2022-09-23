@@ -4,10 +4,9 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 
+//allows MongoDB login info to be hidden when uploaded to github
 const dotenv = require('dotenv');
 dotenv.config();
-const user = process.env.DB_USER;
-const password = process.env.DB_PASS;
 
 // prevent CORS from stopping access
 app.use((req, res, next) => {
